@@ -1,0 +1,7 @@
+pyrogram
+dotenv
+requests
+datetime
+configparser
+logging
+asyncio
