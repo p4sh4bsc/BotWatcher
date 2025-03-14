@@ -21,8 +21,9 @@
    BOT_TOKEN = your_bot_token
    ALLOWED_IDS = id1,id2,id3...
    ```
-`
+
 В ALLOWED_IDS нужно указать id аккаунтов, которые смогут управлять ботом.
+(id аккаунта можно узнать в боте @getidsbot)
 
 ## Использование
 
