@@ -101,6 +101,23 @@ async def main():
         await message.reply_text("""/start - вывод всех команд\n/links - задать пользователя или чаты для уведомлений (в формате /links username или файл с ID)\n/getid - возвращает id закрытого чата\n/triggers - загрузить список триггерных слов\n/channels - загрузить список каналов для мониторинга""", disable_web_page_preview=True)
     
     
+    @bot.on_message(filters.command("link"))
+    async def bot_func(client, message):
+        if message.from_user.id not in ALLOWED_IDS:
+            await message.reply_text("У вас нет прав для использования этого бота")
+            return
+        
+        args = message.text.split()[1:]
+        if not args:
+            await message.reply_text("Отправьте текст, содержащий ID чата или пользователя(никнейм), куда бот будет отправлять сообщения.")
+        else:
+            config = configparser.ConfigParser()
+            config.read(f"{current_directory}/config.ini")
+            config['DEFAULT']['links'] = ",".join(args)
+            with open(f'{current_directory}/config.ini', 'w') as configfile:
+                config.write(configfile)
+            await message.reply_text(f"Теперь сообщения будут отправляться в чат {' '.join(args)}", disable_web_page_preview=True)
+    
     @bot.on_message(filters.command("links"))
     async def bot_func(client, message):
         if message.from_user.id not in ALLOWED_IDS:
@@ -109,7 +126,7 @@ async def main():
 
         args = message.text.split()[1:]
         if not args:
-            await message.reply_text("Отправьте файл (links.txt), содержащий ID чатов или пользователей, куда бот будет отправлять сообщения (каждый ID с новой строки).")
+            await message.reply_text("Отправьте файл (links.txt), содержащий ID чатов или пользователей(никнеймы), куда бот будет отправлять сообщения (каждый ID с новой строки).")
         else:
             config = configparser.ConfigParser()
             config.read(f"{current_directory}/config.ini")
@@ -118,12 +135,21 @@ async def main():
                 config.write(configfile)
             await message.reply_text(f"Теперь сообщения будут отправляться в чат {' '.join(args)}", disable_web_page_preview=True)
 
+
     @bot.on_message(filters.command("triggers"))
     async def bot_func(client, message):
+        if message.from_user.id not in ALLOWED_IDS:
+            await message.reply_text("У вас нет прав для использования этого бота")
+            return
+        
         await message.reply_text("Отправьте файл (triggers.txt), содержащий триггерные слова (каждое слово с новой строки).")
 
     @bot.on_message(filters.command("channels"))
     async def bot_func(client, message):
+        if message.from_user.id not in ALLOWED_IDS:
+            await message.reply_text("У вас нет прав для использования этого бота")
+            return
+        
         await message.reply_text("Отправьте файл (channels.txt), содержащий названия каналов для мониторинга (каждое название с новой строки).")
 
     @bot.on_message(filters.command("getid"))
