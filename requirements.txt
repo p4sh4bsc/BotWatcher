@@ -5,3 +5,4 @@ datetime
 configparser
 logging
 asyncio
+tgcrypto
