@@ -2,11 +2,12 @@ from pyrogram import Client, filters, compose
 from dotenv import load_dotenv
 from datetime import datetime
 import asyncio, configparser, requests, os, logging, time
-import re
+import re, glob
 
 current_date = datetime.now().date()
 time_data = datetime.fromtimestamp(int(time.time()))
 current_directory = os.path.dirname(os.path.abspath(__file__))
+
 
 if 'logs' not in os.listdir(current_directory):
     os.mkdir(f'{current_directory}/logs')
@@ -17,7 +18,19 @@ if 'config.ini' not in os.listdir(current_directory):
     config['DEFAULT'] = {'updated': '0', 'links': '', 'channels': ''}
     with open(f'{current_directory}/config.ini', 'w') as configfile:
         config.write(configfile)
+
+
 logging.basicConfig(level=logging.INFO, filename=f"{current_directory}/logs/logs_{time_data}.log", filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+
+log_files = glob.glob(f"{current_directory}/logs/*.log")
+log_files.sort(key=os.path.getmtime, reverse=True)
+
+for old_log in log_files[4:]:
+    try:
+        os.remove(old_log)
+        logging.info(f"Удален старый лог-файл: {old_log}")
+    except Exception as ex:
+        logging.error(f"Ошибка при удалении лог-файла {old_log}: {ex}")
 
 
 load_dotenv()
@@ -47,8 +60,8 @@ async def main():
         try:
             with open(f"{current_directory}/downloads/triggers.txt", "r") as f:
                 triggers = f.read().splitlines()
-        except:
-            logging.critical("Отсутствует файл с триггерами")
+        except Exception as ex:
+            logging.error(f"Отсутствует файл с триггерами: {ex}")
             triggers = ['ponylab']
         
         if message.chat.title in [i.strip() for i in monitored_channels.split(',') if i.strip()]:
