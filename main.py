@@ -235,7 +235,7 @@ async def main():
             await message.reply_text("У вас нет прав для использования этого бота")
             return
         
-        await message.reply_text("Неизвестная команда! Доступные команды:\n/help, /start, /links, /getid, /triggers, /channels")
+        await message.reply_text("Неизвестная команда! Доступные команды:\n/help, /start, /link, /links, /getid, /triggers, /channels")
     
     await compose(apps)
 
