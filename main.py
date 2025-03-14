@@ -88,7 +88,8 @@ async def main():
                                 await bot.send_message(chat_id=chat_id, text=msg)
                             except:
                                 await bot.send_message(chat_id=chat_id, text=msg)
-                                
+                    
+                    return
                     
     
     @bot.on_message(filters.command(["start", "help"]))
@@ -98,6 +99,8 @@ async def main():
             return
         
         await message.reply_text("""/start - вывод всех команд\n/links - задать пользователя или чаты для уведомлений (в формате /links username или файл с ID)\n/getid - возвращает id закрытого чата\n/triggers - загрузить список триггерных слов\n/channels - загрузить список каналов для мониторинга""", disable_web_page_preview=True)
+    
+    
     @bot.on_message(filters.command("links"))
     async def bot_func(client, message):
         if message.from_user.id not in ALLOWED_IDS:
@@ -114,7 +117,7 @@ async def main():
             with open(f'{current_directory}/config.ini', 'w') as configfile:
                 config.write(configfile)
             await message.reply_text(f"Теперь сообщения будут отправляться в чат {' '.join(args)}", disable_web_page_preview=True)
-    
+
     @bot.on_message(filters.command("triggers"))
     async def bot_func(client, message):
         await message.reply_text("Отправьте файл (triggers.txt), содержащий триггерные слова (каждое слово с новой строки).")
@@ -136,8 +139,8 @@ async def main():
             url = f'https://api.telegram.org/bot{BOT_TOKEN}/getUpdates'
             req = requests.get(url=url)
             if req.status_code != 200:
-                logging.critical("Отсутствуют обязательные переменные окружения")
-                await message.reply_text("API телеграмма упало :(")
+                logging.critical("Проблемы с API телеграмма")
+                await message.reply_text("API телеграмма упал :(")
                 return
 
             src = req.json()['result']
